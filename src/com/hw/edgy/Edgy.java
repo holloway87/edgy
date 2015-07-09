@@ -8,12 +8,15 @@ public class Edgy extends JPanel implements Runnable {
     private final Font fontDefault;
     private long fps = 0;
     private JFrame frame;
+    private Game game;
     private long timeLast = 0;
 
     public Edgy() {
         fontDefault = new Font("sans-serif", Font.PLAIN, 12);
 
         initWindow(800, 600);
+
+        game = new Game();
 
         timeLast = System.nanoTime();
         Thread th = new Thread(this);
@@ -48,6 +51,8 @@ public class Edgy extends JPanel implements Runnable {
         g.setColor(new Color(46, 52, 54));
         g.fillRect(0, 0, getWidth(), getHeight());
 
+        game.draw(g);
+
         g.setFont(fontDefault);
         g.setColor(Color.white);
         g.drawString("FPS: " + Long.toString(fps), 20, 20);
@@ -56,8 +61,7 @@ public class Edgy extends JPanel implements Runnable {
     @Override
     public void run()
     {
-        while (frame.isVisible())
-        {
+        while (frame.isVisible()) {
             calcTimeDelta();
 
             repaint();
