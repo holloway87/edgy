@@ -1,66 +1,84 @@
 package com.hw.edgy;
 
+import com.hw.edgy.input.KeyPressedCommandInterface;
+import com.hw.edgy.input.KeyTypedCommandInterface;
+import com.hw.edgy.input.KeyPressedStruct;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class InputManager implements KeyListener {
-    public static final int ROTATE_LEFT = 0;
-    public static final int ROTATE_RIGHT = 1;
-    public static final int CORNERS_UP = 2;
-    public static final int CORNERS_DOWN = 3;
-
-    private boolean states[];
+    private HashMap<Integer, ArrayList<KeyPressedStruct>> keyPressedCommands;
+    private HashMap<Character, ArrayList<KeyTypedCommandInterface>> keyTypedCommands;
 
     public InputManager() {
-        int length = 4;
-        states = new boolean[length];
-        for (int i = 0; i < length; i++)
-        {
-            states[i] = false;
-        }
+        keyPressedCommands = new HashMap<Integer, ArrayList<KeyPressedStruct>>();
+        keyTypedCommands = new HashMap<Character, ArrayList<KeyTypedCommandInterface>>();
     }
 
-    public boolean getState(int key)
-    {
-        return states[key];
+    public void addKeyPressedCommand(int keyCode, KeyPressedCommandInterface command) {
+        ArrayList<KeyPressedStruct> commands;
+
+        commands = keyPressedCommands.get(keyCode);
+        if (null == commands) {
+            commands = new ArrayList<KeyPressedStruct>();
+            keyPressedCommands.put(keyCode, commands);
+        }
+
+        commands.add(new KeyPressedStruct(command));
+    }
+
+    public void addKeyTypedCommand(char keyChar, KeyTypedCommandInterface command) {
+        ArrayList<KeyTypedCommandInterface> commands;
+
+        commands = keyTypedCommands.get(keyChar);
+        if (null == commands) {
+            commands = new ArrayList<KeyTypedCommandInterface>();
+            keyTypedCommands.put(keyChar, commands);
+        }
+
+        commands.add(command);
+    }
+
+    public void executePressedCommands() {
+        for (ArrayList<KeyPressedStruct> commands: keyPressedCommands.values()) {
+            for (KeyPressedStruct command: commands) {
+                if (command.pressed) {
+                    command.command.execute();
+                }
+            }
+        }
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_LEFT:
-                states[ROTATE_LEFT] = true;
-                break;
-            case KeyEvent.VK_RIGHT:
-                states[ROTATE_RIGHT] = true;
-                break;
-            case KeyEvent.VK_UP:
-                states[CORNERS_UP] = true;
-                break;
-            case KeyEvent.VK_DOWN:
-                states[CORNERS_DOWN] = true;
-                break;
+        ArrayList<KeyPressedStruct> commands = keyPressedCommands.get(e.getKeyCode());
+        if (null != commands) {
+            for (KeyPressedStruct command: commands) {
+                command.pressed = true;
+            }
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_LEFT:
-                states[ROTATE_LEFT] = false;
-                break;
-            case KeyEvent.VK_RIGHT:
-                states[ROTATE_RIGHT] = false;
-                break;
-            case KeyEvent.VK_UP:
-                states[CORNERS_UP] = false;
-                break;
-            case KeyEvent.VK_DOWN:
-                states[CORNERS_DOWN] = false;
-                break;
+        ArrayList<KeyPressedStruct> commands = keyPressedCommands.get(e.getKeyCode());
+        if (null != commands) {
+            for (KeyPressedStruct command: commands) {
+                command.pressed = false;
+            }
         }
     }
 
     @Override
-    public void keyTyped(KeyEvent e) {}
+    public void keyTyped(KeyEvent e) {
+        ArrayList<KeyTypedCommandInterface> commands = keyTypedCommands.get(e.getKeyChar());
+        if (null != commands) {
+            for (KeyTypedCommandInterface command: commands) {
+                command.execute();
+            }
+        }
+    }
 }

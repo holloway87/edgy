@@ -10,6 +10,7 @@ public class Shape {
     private double rotateAngle;
     private int offsetX;
     private int offsetY;
+    private boolean showWireframe;
 
     public Shape() {
         blueLight = new Color(134, 159, 223);
@@ -18,6 +19,7 @@ public class Shape {
         rotateAngle = 0;
         offsetX = 400;
         offsetY = 300;
+        showWireframe = false;
     }
 
     public void draw(Graphics g) {
@@ -42,7 +44,10 @@ public class Shape {
                     tmpAngle += cornersAngel;
                 }
             }
-            g.fillPolygon(xPoints, yPoints, 3);
+            if (!showWireframe) {
+                g.fillPolygon(xPoints, yPoints, 3);
+            }
+            g.drawPolygon(xPoints, yPoints, 3);
         }
     }
 
@@ -52,6 +57,10 @@ public class Shape {
 
     public double getRotateAngle() {
         return rotateAngle;
+    }
+
+    public boolean getShowWireframe() {
+        return showWireframe;
     }
 
     public void setCorners(short corners) {
@@ -68,5 +77,9 @@ public class Shape {
             rotateAngle += 360;
         }
         this.rotateAngle = rotateAngle % 360;
+    }
+
+    public void setShowWireframe(boolean showWireframe) {
+        this.showWireframe = showWireframe;
     }
 }

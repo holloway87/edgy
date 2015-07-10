@@ -19,6 +19,7 @@ public class Edgy extends JPanel implements Runnable {
         initWindow(800, 600);
 
         game = new Game();
+        game.registerInput(input);
 
         timeLast = System.nanoTime();
         Thread th = new Thread(this);
@@ -33,7 +34,7 @@ public class Edgy extends JPanel implements Runnable {
     }
 
     private void checkKeys() {
-        game.checkKeys(input);
+        input.executePressedCommands();
     }
 
     private void initWindow(int w, int h) {
