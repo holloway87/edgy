@@ -1,50 +1,72 @@
 package com.hw.edgy;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
 
 public class Shape {
     private final Color blueLight;
     private short corners;
     private int radius;
+    private double rotateAngle;
     private int offsetX;
     private int offsetY;
 
     public Shape() {
         blueLight = new Color(134, 159, 223);
         corners = 3;
-        radius = 100;
+        radius = 200;
+        rotateAngle = 0;
         offsetX = 400;
         offsetY = 300;
     }
 
     public void draw(Graphics g) {
         double cornersAngel = 360 / corners;
-        double ang = (180 - cornersAngel) / 2;
         int[] xPoints = new int[3];
         int[] yPoints = new int[3];
-
-        double sideLength = (Math.cos(ang * 2 * Math.PI / 360) * radius) * 2;
-        int diffX = (int) (sideLength / 2);
-        int diffY = (int) Math.sqrt(Math.pow(radius, 2) - Math.pow(diffX, 2));
+        int rotateDiffX;
+        int rotateDiffY;
+        double tmpAngle = rotateAngle;
 
         xPoints[0] = offsetX;
         yPoints[0] = offsetY;
-        xPoints[1] = offsetX;
-        yPoints[1] = offsetY - radius;
-        xPoints[2] = offsetX + diffX;
-        yPoints[2] = offsetY + diffY;
 
         g.setColor(blueLight);
-        g.fillPolygon(xPoints, yPoints, 3);
+        for (int c = 0; c < corners; c++) {
+            for (short a = 1; a <= 2; a++) {
+                rotateDiffX = (int) (Math.sin(tmpAngle * 2 * Math.PI / 360) * radius);
+                rotateDiffY = (int) (Math.cos(tmpAngle * 2 * Math.PI / 360) * radius);
+                xPoints[a] = offsetX + rotateDiffX;
+                yPoints[a] = offsetY - rotateDiffY;
+                if (1 == a) {
+                    tmpAngle += cornersAngel;
+                }
+            }
+            g.fillPolygon(xPoints, yPoints, 3);
+        }
+    }
 
-        xPoints[1] = xPoints[2];
-        yPoints[1] = yPoints[2];
-        xPoints[2] = offsetX - diffX;
-        yPoints[2] = offsetY + diffY;
-        g.fillPolygon(xPoints, yPoints, 3);
+    public short getCorners() {
+        return corners;
+    }
 
-        xPoints[1] = offsetX;
-        yPoints[1] = offsetY - radius;
-        g.fillPolygon(xPoints, yPoints, 3);
+    public double getRotateAngle() {
+        return rotateAngle;
+    }
+
+    public void setCorners(short corners) {
+        if (3 > corners) {
+            corners = 3;
+        } else if (100 < corners) {
+            corners = 100;
+        }
+        this.corners = corners;
+    }
+
+    public void setRotateAngle(double rotateAngle) {
+        if (0 > rotateAngle) {
+            rotateAngle += 360;
+        }
+        this.rotateAngle = rotateAngle % 360;
     }
 }

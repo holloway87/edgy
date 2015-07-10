@@ -8,11 +8,13 @@ public class Edgy extends JPanel implements Runnable {
     private final Font fontDefault;
     private long fps = 0;
     private JFrame frame;
-    private Game game;
+    private final InputManager input;
+    private final Game game;
     private long timeLast = 0;
 
     public Edgy() {
         fontDefault = new Font("sans-serif", Font.PLAIN, 12);
+        input = new InputManager();
 
         initWindow(800, 600);
 
@@ -30,12 +32,17 @@ public class Edgy extends JPanel implements Runnable {
         fps = ((long) 1e9) / timeDelta;
     }
 
+    private void checkKeys() {
+        game.checkKeys(input);
+    }
+
     private void initWindow(int w, int h) {
         this.setPreferredSize(new Dimension(w, h));
         frame = new JFrame("edgy");
         frame.setLocation(100, 100);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.add(this);
+        frame.addKeyListener(input);
         frame.pack();
         frame.setVisible(true);
     }
@@ -63,6 +70,7 @@ public class Edgy extends JPanel implements Runnable {
     {
         while (frame.isVisible()) {
             calcTimeDelta();
+            checkKeys();
 
             repaint();
 
